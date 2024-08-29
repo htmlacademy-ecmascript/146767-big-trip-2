@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Александр Абрамкин](https://up.htmlacademy.ru/ecmascript-individual/2/user/146767).
-* Наставник: `Неизвестно`.
+* Наставник: [Алексей Хабиров](https://htmlacademy.ru/profile/alex_khab).
 
 ---
 
