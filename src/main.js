@@ -1,9 +1,12 @@
 import ListPresenter from './presenter/list-presenter.js';
-import ExistPointsModel from './model/exist-points-model.js';
+import PointsModel from './model/points-model.js';
 
-const existPointsModel = new ExistPointsModel();
+export const filtersContainer = document.querySelector('.trip-controls__filters');
+export const mainContainer = document.querySelector('.trip-events');
+
+const pointsModel = new PointsModel();
 const listPresenter = new ListPresenter({
-  existPointsModel,
+  pointsModel,
 });
 
 listPresenter.init();

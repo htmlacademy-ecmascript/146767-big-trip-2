@@ -2,7 +2,7 @@ import {points} from '../mocks/points.js';
 import {destinations} from '../mocks/destinations.js';
 import {offers} from '../mocks/offers.js';
 
-export default class ExistPointsModel {
+export default class PointsModel {
   constructor() {
     this.points = points;
     this.offers = offers;

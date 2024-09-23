@@ -20,15 +20,15 @@ const createOffersTemplate = (offers) => offers.map(({title, price}) => `
   </li>`)
   .join('');
 
-function createItemTemplate(points, destinations, offers) {
+function createItemTemplate(point, destination, offers) {
   const {
     type,
     basePrice,
     dateFrom,
     dateTo,
     isFavorite
-  } = points;
-  const {name} = destinations;
+  } = point;
+  const {name} = destination;
   const date = humanizeTaskDueDate(dateFrom, DATE_FORMAT);
   const dateTime = humanizeTaskDueDate(dateFrom, DATE_TIME_FORMAT);
   const timeFrom = humanizeTaskDueDate(dateFrom, TIME_FORMAT);
@@ -72,16 +72,16 @@ function createItemTemplate(points, destinations, offers) {
 }
 
 export default class ItemView {
-  constructor({points, destinations, offers}) {
-    this.points = points;
-    this.destinations = destinations;
+  constructor({point, destination, offers}) {
+    this.point = point;
+    this.destination = destination;
     this.offers = offers;
   }
 
   getTemplate() {
     return createItemTemplate(
-      this.points,
-      this.destinations,
+      this.point,
+      this.destination,
       this.offers
     );
   }

@@ -4,58 +4,45 @@ import ListContainerView from '../view/list-container-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import ItemView from '../view/item-view.js';
 import {render} from '../render.js';
-import {getDefaultPoint, getDefaultDestination} from '../view/edit-point-view.js';
-
-const filtersContainer = document.querySelector('.trip-controls__filters');
-const sortContainer = document.querySelector('.trip-events');
+import {filtersContainer, mainContainer} from '../main.js';
 
 export default class ListPresenter {
   listComponent = new ListContainerView();
 
-  constructor({existPointsModel}) {
-    this.existPointsModel = existPointsModel;
+  constructor({pointsModel}) {
+    this.pointsModel = pointsModel;
   }
 
   init() {
-    this.listPoints = [...this.existPointsModel.getPoints()];
+    this.listPoints = [...this.pointsModel.getPoints()];
 
     render(new ListFilterView(), filtersContainer);
-    render(new ListSortView(), sortContainer);
-    render(this.listComponent, sortContainer);
+    render(new ListSortView(), mainContainer);
+    render(this.listComponent, mainContainer);
 
     render(new EditPointView({
-      points: getDefaultPoint(),
-      destination: getDefaultDestination(),
-      destinations: this.existPointsModel.getDestinations(),
-      offers: this.existPointsModel.getOfferByType(
-        getDefaultPoint().type
-      )
+      destinations: this.pointsModel.getDestinations(),
+      offers: this.pointsModel.getOffers(),
     }), this.listComponent.getElement());
 
     render(new EditPointView({
-      points: this.listPoints[0],
-      destination: this.existPointsModel.getDestinationById(
+      point: this.listPoints[0],
+      destination: this.pointsModel.getDestinationById(
         this.listPoints[0].destination),
-      destinations: this.existPointsModel.getDestinations(),
-      offers: this.existPointsModel.getOfferByType(
-        this.listPoints[0].type
-      ),
-      addedOffers: [...this.existPointsModel.getOfferById(
-        this.listPoints[0].type,
-        this.listPoints[0].offers
-      )]
+      destinations: this.pointsModel.getDestinations(),
+      offers: this.pointsModel.getOffers()
     }), this.listComponent.getElement());
 
-    for (let i = 0; this.listPoints.length; i++) {
+    this.listPoints.forEach((point) => {
       render(new ItemView({
-        points: this.listPoints[i],
-        destinations: this.existPointsModel.getDestinationById(
-          this.listPoints[i].destination),
-        offers: [...this.existPointsModel.getOfferById(
-          this.listPoints[i].type,
-          this.listPoints[i].offers
-        )]
+        point,
+        destination: this.pointsModel.getDestinationById(
+          point.destination),
+        offers: this.pointsModel.getOfferById(
+          point.type,
+          point.offers
+        )
       }), this.listComponent.getElement());
-    }
+    });
   }
 }

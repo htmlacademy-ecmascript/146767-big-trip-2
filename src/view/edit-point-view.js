@@ -5,23 +5,20 @@ import {
   EVENT_TYPES,
   DEFAULT_EVENT_TYPE,
   EDIT_POINT_BUTTON_TEXT,
-  NEW_POINT_BUTTON_TEXT,
-  DEFAULT_POINT_ID
+  NEW_POINT_BUTTON_TEXT
 } from '../constants.js';
 
-export const getDefaultPoint = () => ({
-  id: DEFAULT_POINT_ID,
+const getDefaultPoint = () => ({
   basePrice: 0,
   dateFrom: new Date().toISOString(),
   dateTo: new Date().toISOString(),
-  destination: 0,
+  destination: '',
   isFavorite: false,
   offers: [],
   type: DEFAULT_EVENT_TYPE
 });
 
-export const getDefaultDestination = () => ({
-  id: DEFAULT_POINT_ID,
+const getDefaultDestination = () => ({
   description: '',
   name: '',
   pictures: []
@@ -45,14 +42,15 @@ const createDestinationItemTemplate = (destinations) =>
     <option value="${name}"></option>`)
     .join('');
 
-const createOfferItemTemplate = (offers, addedOffers, type) =>
-  offers.offers.map(({id, title, price}) => {
-    const isChecked = addedOffers.map((addedOffer) => addedOffer.id)
-      .includes(id) ? 'checked' : '';
+const createOfferItemTemplate = (offersByType, point, type) =>
+  offersByType.offers.map(({id, title, price}) => {
+    const isChecked = point.offers.includes(id)
+      ? 'checked'
+      : '';
 
     return (`
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${type}-${id}"  ${isChecked} />
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${type}-${id}" ${isChecked}/>
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title} ${id}</span>
           &plus;&euro;&nbsp;
@@ -61,8 +59,14 @@ const createOfferItemTemplate = (offers, addedOffers, type) =>
       </div>`);
   }).join('');
 
-const createOffersContainerTemplate = (offers, addedOffers, type) => {
-  if (!offers.offers.length) {
+const createOffersContainerTemplate = (offers, point, type) => {
+  let offersByType = offers.find((offer) => offer.type === type);
+
+  if (!offersByType) {
+    offersByType = getDefaultOffer();
+  }
+
+  if (!offersByType.offers.length) {
     return '';
   }
 
@@ -71,7 +75,7 @@ const createOffersContainerTemplate = (offers, addedOffers, type) => {
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
-        ${createOfferItemTemplate(offers, addedOffers, type)}
+        ${createOfferItemTemplate(offersByType, point, type)}
       </div>
     </section>`;
 };
@@ -114,7 +118,7 @@ const createDestinationContainerTemplate = (description, name, pictures) => {
 };
 
 const createRollupButtonTemplate = (id) => {
-  if (id === DEFAULT_POINT_ID) {
+  if (!id) {
     return '';
   }
 
@@ -125,23 +129,22 @@ const createRollupButtonTemplate = (id) => {
 };
 
 const getResetButtonText = (id) =>
-  id === DEFAULT_POINT_ID
-    ? NEW_POINT_BUTTON_TEXT
-    : EDIT_POINT_BUTTON_TEXT;
+  id
+    ? EDIT_POINT_BUTTON_TEXT
+    : NEW_POINT_BUTTON_TEXT;
 
 function createEditPointTemplate(
-  points,
-  destination,
+  point = getDefaultPoint(),
+  destination = getDefaultDestination(),
   destinations,
-  offers = getDefaultOffer(),
-  addedOffers = []) {
+  offers = getDefaultOffer()) {
   const {
     id,
     type,
     basePrice,
     dateFrom,
     dateTo
-  } = points;
+  } = point;
   const {
     name,
     description,
@@ -203,7 +206,7 @@ function createEditPointTemplate(
         </header>
         <section class="event__details">
 
-          ${createOffersContainerTemplate(offers, addedOffers, type)}
+          ${createOffersContainerTemplate(offers, point, type)}
 
           ${createDestinationContainerTemplate(description, name, pictures)}
         </section>
@@ -213,8 +216,8 @@ function createEditPointTemplate(
 }
 
 export default class EditPointView {
-  constructor({points, destination, destinations, offers, addedOffers}) {
-    this.points = points;
+  constructor({point, destination, destinations, offers, addedOffers}) {
+    this.point = point;
     this.destination = destination;
     this.destinations = destinations;
     this.offers = offers;
@@ -223,7 +226,7 @@ export default class EditPointView {
 
   getTemplate() {
     return createEditPointTemplate(
-      this.points,
+      this.point,
       this.destination,
       this.destinations,
       this.offers,

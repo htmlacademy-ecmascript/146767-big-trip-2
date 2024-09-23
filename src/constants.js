@@ -16,4 +16,3 @@ export const EVENT_TYPES = [
 export const DEFAULT_EVENT_TYPE = EVENT_TYPES[0];
 export const EDIT_POINT_BUTTON_TEXT = 'Delete';
 export const NEW_POINT_BUTTON_TEXT = 'Cancel';
-export const DEFAULT_POINT_ID = 'defaultPointId';

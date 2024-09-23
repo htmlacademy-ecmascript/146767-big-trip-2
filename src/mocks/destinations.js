@@ -1,6 +1,6 @@
 export const destinations = [
   {
-    id: 1,
+    id: '1',
     description: 'London is the capital of the United Kingdom. The city is home to many attractions, such as Buckingham Palace and the Tower',
     name: 'London',
     pictures: [
@@ -27,7 +27,7 @@ export const destinations = [
     ]
   },
   {
-    id: 2,
+    id: '2',
     description: 'Moscow is the capital of the Russian Federation. The city is home to many attractions, such as Red Square and the Kremlin',
     name: 'Moscow',
     pictures: [
@@ -38,13 +38,13 @@ export const destinations = [
     ]
   },
   {
-    id: 3,
+    id: '3',
     description: '',
     name: 'Petropavlovsk-Kamchatsky',
     pictures: []
   },
   {
-    id: 4,
+    id: '4',
     description: 'Krasnodar is a city in Russia. The city is home to many attractions, including the Krasnodar Museum of Local Lore and Krasnaya Polyana Park',
     name: 'Krasnodar',
     pictures: [
@@ -59,7 +59,7 @@ export const destinations = [
     ]
   },
   {
-    id: 5,
+    id: '5',
     description: '',
     name: 'Antarctica',
     pictures: []
