@@ -1,5 +1,12 @@
-import ListPresenter from './list-presenter.js';
+import ListPresenter from './presenter/list-presenter.js';
+import PointsModel from './model/points-model.js';
 
-const listPresenter = new ListPresenter();
+export const filtersContainer = document.querySelector('.trip-controls__filters');
+export const mainContainer = document.querySelector('.trip-events');
+
+const pointsModel = new PointsModel();
+const listPresenter = new ListPresenter({
+  pointsModel,
+});
 
 listPresenter.init();
