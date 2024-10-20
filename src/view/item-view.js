@@ -12,13 +12,13 @@ const getFavoriteClassName = (favorite) => isFavoritePoint(favorite)
   ? '--active'
   : '';
 
-const createOffersTemplate = (offers) => offers.map(({title, price}) => `
-  <li class="event__offer">
+const createOffersTemplate = (offers) => offers.map(({title, price}) =>
+  `<li class="event__offer">
     <span class="event__offer-title">${title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${price}</span>
-  </li>`)
-  .join('');
+  </li>`
+).join('');
 
 function createItemTemplate(point, destination, offers) {
   const {

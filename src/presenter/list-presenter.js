@@ -21,16 +21,12 @@ export default class ListPresenter {
     render(this.listComponent, mainContainer);
 
     render(new EditPointView({
-      destinations: this.pointsModel.getDestinations(),
-      offers: this.pointsModel.getOffers(),
-    }), this.listComponent.getElement());
-
-    render(new EditPointView({
       point: this.listPoints[0],
       destination: this.pointsModel.getDestinationById(
         this.listPoints[0].destination),
       destinations: this.pointsModel.getDestinations(),
-      offers: this.pointsModel.getOffers()
+      offers: this.pointsModel.getOffers(),
+      isEditMode: true
     }), this.listComponent.getElement());
 
     this.listPoints.forEach((point) => {
