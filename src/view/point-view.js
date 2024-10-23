@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
-import {humanizeTaskDueDate} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {humanizeTaskDueDate} from '../utils/task.js';
 import {
   DATE_FORMAT,
   DATE_TIME_FORMAT,
@@ -12,13 +12,13 @@ const getFavoriteClassName = (favorite) => isFavoritePoint(favorite)
   ? '--active'
   : '';
 
-const createOffersTemplate = (offers) => offers.map(({title, price}) => `
-  <li class="event__offer">
+const createOffersTemplate = (offers) => offers.map(({title, price}) =>
+  `<li class="event__offer">
     <span class="event__offer-title">${title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${price}</span>
-  </li>`)
-  .join('');
+  </li>`
+).join('');
 
 function createItemTemplate(point, destination, offers) {
   const {
@@ -71,30 +71,33 @@ function createItemTemplate(point, destination, offers) {
   );
 }
 
-export default class ItemView {
-  constructor({point, destination, offers}) {
-    this.point = point;
-    this.destination = destination;
-    this.offers = offers;
+export default class PointView extends AbstractView {
+  #point = null;
+  #destination = null;
+  #offers = null;
+  #handleEditClick = null;
+
+  constructor({point, destination, offers, onEditClick}) {
+    super();
+    this.#point = point;
+    this.#destination = destination;
+    this.#offers = offers;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
+  get template() {
     return createItemTemplate(
-      this.point,
-      this.destination,
-      this.offers
+      this.#point,
+      this.#destination,
+      this.#offers
     );
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

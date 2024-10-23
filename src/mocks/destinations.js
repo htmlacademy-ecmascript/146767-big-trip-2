@@ -39,13 +39,13 @@ export const destinations = [
   },
   {
     id: '3',
-    description: '',
+    description: 'Petropavlovsk-Kamchatsky is a Russian city located in the Kamchatka Peninsula, in the Russian Far East. The city is known for its rich history, stunning natural beauty, and unique culture',
     name: 'Petropavlovsk-Kamchatsky',
     pictures: []
   },
   {
     id: '4',
-    description: 'Krasnodar is a city in Russia. The city is home to many attractions, including the Krasnodar Museum of Local Lore and Krasnaya Polyana Park',
+    description: '',
     name: 'Krasnodar',
     pictures: [
       {
@@ -55,6 +55,10 @@ export const destinations = [
       {
         src: 'http://placehold.it/300x200',
         description: 'Krasnodar img 2'
+      },
+      {
+        src: 'http://placehold.it/300x200',
+        description: 'Krasnodar img 3'
       }
     ]
   },
