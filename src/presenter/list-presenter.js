@@ -4,14 +4,18 @@ import ListSortView from '../view/list-sort-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
+import EventAddButtonView from '../view/event-add-button-view.js';
+import {headerContainer, filtersContainer, mainContainer} from '../main.js';
 import {render, replace} from '../framework/render.js';
-import {filtersContainer, mainContainer} from '../main.js';
+import {generateFilter} from '../mocks/filter.js';
 
 export default class ListPresenter {
   #pointsModel = null;
   #listPoints = [];
 
   #listComponent = new ListContainerView();
+  #listEmpty = new ListEmptyView();
+  #eventAddButton = new EventAddButtonView();
 
   constructor({pointsModel}) {
     this.#pointsModel = pointsModel;
@@ -71,10 +75,13 @@ export default class ListPresenter {
   }
 
   #renderList() {
-    render(new ListFilterView(), filtersContainer);
+    const filters = generateFilter(this.#listPoints);
+
+    render(new ListFilterView({filters}), filtersContainer);
+    render(this.#eventAddButton, headerContainer);
 
     if (!this.#listPoints.length) {
-      render(new ListEmptyView(), mainContainer);
+      render(this.#listEmpty, mainContainer);
       return;
     }
 
