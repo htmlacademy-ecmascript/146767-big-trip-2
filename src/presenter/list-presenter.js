@@ -8,8 +8,6 @@ import EventAddButtonView from '../view/event-add-button-view.js';
 import {headerContainer, filtersContainer, mainContainer} from '../main.js';
 import {render, replace} from '../framework/render.js';
 import {generateFilter} from '../mocks/filter.js';
-import {generateSort} from '../mocks/sort.js';
-import {DISABLED_SORTS} from '../constants.js';
 
 export default class ListPresenter {
   #pointsModel = null;
@@ -78,7 +76,6 @@ export default class ListPresenter {
 
   #renderList() {
     const filters = generateFilter(this.#listPoints);
-    const sorts = generateSort(this.#listPoints);
 
     render(new ListFilterView({filters}), filtersContainer);
     render(this.#eventAddButton, headerContainer);
@@ -88,7 +85,7 @@ export default class ListPresenter {
       return;
     }
 
-    render(new ListSortView({sorts}, DISABLED_SORTS), mainContainer);
+    render(new ListSortView(), mainContainer);
     render(this.#listComponent, mainContainer);
 
     this.#listPoints.forEach((point) => {

@@ -14,14 +14,24 @@ export const FilterType = {
 };
 
 export const SortType = {
-  DAY: 'day',
-  EVENT: 'event',
-  TIME: 'time',
-  PRICE: 'price',
-  OFFERS: 'offers',
+  DAY: {
+    value: 'day',
+    state: 'enabled'
+  },
+  EVENT: {
+    value: 'event',
+    state: 'disabled'
+  },
+  TIME: {
+    value: 'time',
+    state: 'enabled'
+  },
+  PRICE: {
+    value: 'price',
+    state: 'enabled'
+  },
+  OFFERS: {
+    value: 'offers',
+    state: 'disabled'
+  },
 };
-
-export const DISABLED_SORTS = [
-  SortType.EVENT,
-  SortType.OFFERS,
-];

@@ -1,27 +1,29 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import {SortType} from '../constants.js';
 
-const createSortItemTemplate = ({type}, disabledSortItems, isChecked) => (
-  `<div class="trip-sort__item  trip-sort__item--${type}">
+const createSortItemTemplate = ({value, state}, isChecked) => (
+  `<div class="trip-sort__item  trip-sort__item--${value}">
     <input
-      id="sort-${type}"
+      id="sort-${value}"
       class="trip-sort__input  visually-hidden"
       type="radio"
       name="trip-sort"
-      value="sort-${type}"
+      value="sort-${value}"
       ${isChecked ? 'checked' : ''}
-      ${disabledSortItems.includes(type) ? 'disabled' : ''}
+      ${state === 'enabled' ? '' : 'disabled'}
     >
     <label
       class="trip-sort__btn"
-      for="sort-${type}">
-      ${type}
+      for="sort-${value}">
+      ${value}
     </label>
   </div>`
 );
 
-const createListSortTemplate = (sortItems, disabledSortItems) => {
-  const sortItemsTemplate = sortItems
-    .map((sort, index) => createSortItemTemplate(sort, disabledSortItems, index === 0))
+const createListSortTemplate = (sortItems) => {
+  const sortItemsTemplate = Object
+    .entries(sortItems)
+    .map((sortValues, index) => createSortItemTemplate(sortValues[1], index === 0))
     .join('');
 
   return (
@@ -32,19 +34,7 @@ const createListSortTemplate = (sortItems, disabledSortItems) => {
 };
 
 export default class ListSortView extends AbstractView {
-  #sorts = [];
-  #disabledSorts = [];
-
-  constructor({sorts}, disabledSorts) {
-    super();
-    this.#sorts = sorts;
-    this.#disabledSorts = disabledSorts;
-  }
-
   get template() {
-    return createListSortTemplate(
-      this.#sorts,
-      this.#disabledSorts
-    );
+    return createListSortTemplate(SortType);
   }
 }
