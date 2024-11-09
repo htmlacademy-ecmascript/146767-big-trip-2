@@ -7,6 +7,7 @@ import PointPresenter from '../presenter/point-presenter.js';
 import {headerContainer, filtersContainer, mainContainer} from '../main.js';
 import {render} from '../framework/render.js';
 import {generateFilter} from '../mocks/filter.js';
+import {updateItem} from '../utils/common.js';
 
 export default class ListPresenter {
   #pointsModel = null;
@@ -15,6 +16,7 @@ export default class ListPresenter {
   #listContainer = new ListContainerView();
   #listEmpty = new ListEmptyView();
   #eventAddButton = new EventAddButtonView();
+  #pointPresenters = new Map();
 
   constructor({pointsModel}) {
     this.#pointsModel = pointsModel;
@@ -45,12 +47,24 @@ export default class ListPresenter {
     });
   }
 
+  #handlePointChange = (updatePoint) => {
+    this.#listPoints = updateItem(this.#listPoints, updatePoint);
+    this.#pointPresenters.get(updatePoint.id).init(updatePoint);
+  };
+
+  #clearPointsList() {
+    this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
+    this.#pointsModel.clear();
+  }
+
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
       listContainer: this.#listContainer,
-      pointsModel: this.#pointsModel
+      pointsModel: this.#pointsModel,
+      onDataChange: this.#handlePointChange
     });
 
     pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 }
