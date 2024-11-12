@@ -34,7 +34,24 @@ const createListSortTemplate = (sortItems) => {
 };
 
 export default class ListSortView extends AbstractView {
+  #handleSortTypeChange = null;
+
+  constructor({onSortTypeChange}) {
+    super();
+    this.#handleSortTypeChange = onSortTypeChange;
+    this.element.addEventListener('click', this.#sortTypeChangeHandler);
+  }
+
   get template() {
     return createListSortTemplate(SortType);
   }
+
+  #sortTypeChangeHandler = (evt) => {
+    if (!evt.target.classList.contains('trip-sort__btn')) {
+      return;
+    }
+
+    evt.preventDefault();
+    this.#handleSortTypeChange(evt.target.getAttribute('for'));
+  };
 }

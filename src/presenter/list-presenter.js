@@ -7,11 +7,16 @@ import PointPresenter from '../presenter/point-presenter.js';
 import {headerContainer, filtersContainer, mainContainer} from '../main.js';
 import {render} from '../framework/render.js';
 import {generateFilter} from '../mocks/filter.js';
+import {sortDateDown, sortPriceDown} from '../utils/task.js';
 import {updateItem} from '../utils/common.js';
+import {SortType} from '../constants.js';
 
 export default class ListPresenter {
   #pointsModel = null;
+  #listSort = null;
   #listPoints = [];
+  #sourcedListPoints = [];
+  #currentSortType = SortType.DAY;
 
   #listContainer = new ListContainerView();
   #listEmpty = new ListEmptyView();
@@ -24,22 +29,34 @@ export default class ListPresenter {
 
   init() {
     this.#listPoints = [...this.#pointsModel.getPoints()];
+    this.#sourcedListPoints = [...this.#pointsModel.getPoints()];
 
-    this.#renderList();
+    this.#renderApp();
   }
 
-  #renderList() {
+  #renderFilters() {
     const filters = generateFilter(this.#listPoints);
 
     render(new ListFilterView({filters}), filtersContainer);
+  }
+
+  #renderAddButton() {
     render(this.#eventAddButton, headerContainer);
+  }
 
-    if (!this.#listPoints.length) {
-      render(this.#listEmpty, mainContainer);
-      return;
-    }
+  #renderListEmpty() {
+    render(this.#listEmpty, mainContainer);
+  }
 
-    render(new ListSortView(), mainContainer);
+  #renderSort() {
+    this.#listSort = new ListSortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
+    render(this.#listSort, mainContainer);
+  }
+
+  #renderPointsList() {
     render(this.#listContainer, mainContainer);
 
     this.#listPoints.forEach((point) => {
@@ -47,18 +64,37 @@ export default class ListPresenter {
     });
   }
 
-  #handleModeChange = () => {
-    this.#pointPresenters.forEach((presenter) => presenter.resetView());
-  };
+  #renderApp() {
+    this.#renderFilters();
+    this.#renderAddButton();
 
-  #handlePointChange = (updatePoint) => {
-    this.#listPoints = updateItem(this.#listPoints, updatePoint);
-    this.#pointPresenters.get(updatePoint.id).init(updatePoint);
-  };
+    if (!this.#listPoints.length) {
+      this.#renderListEmpty();
+      return;
+    }
+
+    this.#renderSort();
+    this.#renderPointsList();
+  }
+
+  #sortPoints(sortType) {
+    switch (sortType) {
+      case SortType.TIME.type:
+        this.#listPoints.sort(sortDateDown);
+        break;
+      case SortType.PRICE.type:
+        this.#listPoints.sort(sortPriceDown);
+        break;
+      default:
+        this.#listPoints = [...this.#sourcedListPoints];
+    }
+
+    this.#currentSortType.type = sortType;
+  }
 
   #clearPointsList() {
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
-    this.#pointsModel.clear();
+    this.#pointPresenters.clear();
   }
 
   #renderPoint(point) {
@@ -72,4 +108,24 @@ export default class ListPresenter {
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType.type === sortType) {
+      return;
+    }
+
+    this.#sortPoints(sortType);
+    this.#clearPointsList();
+    this.#renderPointsList();
+  };
+
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handlePointChange = (updatePoint) => {
+    this.#listPoints = updateItem(this.#listPoints, updatePoint);
+    this.#sourcedListPoints = updateItem(this.#sourcedListPoints, updatePoint);
+    this.#pointPresenters.get(updatePoint.id).init(updatePoint);
+  };
 }
