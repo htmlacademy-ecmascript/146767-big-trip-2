@@ -17,8 +17,7 @@ export const FilterType = {
 export const SortType = {
   DAY: {
     value: 'day',
-    state: 'enabled',
-    type: 'sort-day'
+    state: 'enabled'
   },
   EVENT: {
     value: 'event',
@@ -26,13 +25,11 @@ export const SortType = {
   },
   TIME: {
     value: 'time',
-    state: 'enabled',
-    type: 'sort-time'
+    state: 'enabled'
   },
   PRICE: {
     value: 'price',
-    state: 'enabled',
-    type: 'sort-price'
+    state: 'enabled'
   },
   OFFERS: {
     value: 'offers',

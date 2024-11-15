@@ -8,7 +8,7 @@ const createSortItemTemplate = ({value, state}, isChecked) => (
       class="trip-sort__input  visually-hidden"
       type="radio"
       name="trip-sort"
-      value="sort-${value}"
+      value="${value}"
       ${isChecked ? 'checked' : ''}
       ${state === 'enabled' ? '' : 'disabled'}
     >
@@ -39,7 +39,7 @@ export default class ListSortView extends AbstractView {
   constructor({onSortTypeChange}) {
     super();
     this.#handleSortTypeChange = onSortTypeChange;
-    this.element.addEventListener('click', this.#sortTypeChangeHandler);
+    this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
   get template() {
@@ -47,11 +47,7 @@ export default class ListSortView extends AbstractView {
   }
 
   #sortTypeChangeHandler = (evt) => {
-    if (!evt.target.classList.contains('trip-sort__btn')) {
-      return;
-    }
-
     evt.preventDefault();
-    this.#handleSortTypeChange(evt.target.getAttribute('for'));
+    this.#handleSortTypeChange(evt.target.value);
   };
 }

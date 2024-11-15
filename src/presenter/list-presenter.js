@@ -7,7 +7,7 @@ import PointPresenter from '../presenter/point-presenter.js';
 import {headerContainer, filtersContainer, mainContainer} from '../main.js';
 import {render} from '../framework/render.js';
 import {generateFilter} from '../mocks/filter.js';
-import {sortDateDown, sortPriceDown} from '../utils/task.js';
+import {sortDateDesc, sortPriceDesc} from '../utils/task.js';
 import {updateItem} from '../utils/common.js';
 import {SortType} from '../constants.js';
 
@@ -79,17 +79,17 @@ export default class ListPresenter {
 
   #sortPoints(sortType) {
     switch (sortType) {
-      case SortType.TIME.type:
-        this.#listPoints.sort(sortDateDown);
+      case SortType.TIME.value:
+        this.#listPoints.sort(sortDateDesc);
         break;
-      case SortType.PRICE.type:
-        this.#listPoints.sort(sortPriceDown);
+      case SortType.PRICE.value:
+        this.#listPoints.sort(sortPriceDesc);
         break;
       default:
         this.#listPoints = [...this.#sourcedListPoints];
     }
 
-    this.#currentSortType.type = sortType;
+    this.#currentSortType.value = sortType;
   }
 
   #clearPointsList() {
@@ -110,10 +110,6 @@ export default class ListPresenter {
   }
 
   #handleSortTypeChange = (sortType) => {
-    if (this.#currentSortType.type === sortType) {
-      return;
-    }
-
     this.#sortPoints(sortType);
     this.#clearPointsList();
     this.#renderPointsList();
