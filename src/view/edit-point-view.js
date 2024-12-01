@@ -228,8 +228,11 @@ export default class EditPointView extends AbstractStatefulView {
       .addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__input--price')
       .addEventListener('input', this.#priceInputHandler);
-    this.element.querySelector('.event__details')
-      .addEventListener('change', this.#offerChangeHandler);
+
+    if (this.element.querySelector('.event__section--offers')) {
+      this.element.querySelector('.event__section--offers')
+        .addEventListener('change', this.#offerChangeHandler);
+    }
   }
 
   get template() {
@@ -273,14 +276,18 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
-  #offerChangeHandler = () => {
-    const currentOffers = Array.from(
-      this.element.querySelectorAll('.event__offer-checkbox:checked')
-    );
+  #offerChangeHandler = (evt) => {
+    const currentOffer = evt.target.dataset.offerId;
 
-    this._setState({
-      offers: currentOffers.map((offer) => offer.dataset.offerId)
-    });
+    if (evt.target.checked) {
+      this._setState({
+        offers: [...this._state.offers, currentOffer]
+      });
+    } else {
+      this._setState({
+        offers: this._state.offers.filter((offer) => offer !== currentOffer)
+      });
+    }
   };
 
   #formSubmitHandler = (evt) => {
