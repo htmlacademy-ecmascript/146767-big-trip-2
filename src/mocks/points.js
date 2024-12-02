@@ -2,8 +2,8 @@ export const points = [
   {
     id: '1',
     basePrice: 100,
-    dateFrom: '2024-09-07T15:40:00',
-    dateTo: '2024-09-07T16:00:00',
+    dateFrom: '2024-09-07T11:51:00.000Z',
+    dateTo: '2024-09-07T12:00:00.000Z',
     destination: '1',
     isFavorite: false,
     offers: [
@@ -15,8 +15,8 @@ export const points = [
   {
     id: '2',
     basePrice: 1000,
-    dateFrom: '2024-09-11T12:30:00',
-    dateTo: '2024-09-11T18:00:00',
+    dateFrom: '2024-09-11T08:00:00.000Z',
+    dateTo: '2024-09-11T09:40:00.000Z',
     destination: '2',
     isFavorite: true,
     offers: [],
@@ -25,8 +25,8 @@ export const points = [
   {
     id: '3',
     basePrice: 500,
-    dateFrom: '2024-10-01T10:00:00',
-    dateTo: '2024-10-02T12:00:00',
+    dateFrom: '2024-10-01T06:00:00.000Z',
+    dateTo: '2024-10-02T08:03:00.000Z',
     destination: '3',
     isFavorite: false,
     offers: [
@@ -37,8 +37,8 @@ export const points = [
   {
     id: '4',
     basePrice: 2000,
-    dateFrom: '2024-10-05T20:20:00',
-    dateTo: '2024-10-06T17:10:00',
+    dateFrom: '2024-10-05T16:10:00.000Z',
+    dateTo: '2024-10-06T13:10:00.000Z',
     destination: '4',
     isFavorite: false,
     offers: [
@@ -50,8 +50,8 @@ export const points = [
   {
     id: '5',
     basePrice: 10000,
-    dateFrom: '2024-11-25T15:00:00',
-    dateTo: '2024-12-20T12:00:00',
+    dateFrom: '2024-10-25T11:55:00.000Z',
+    dateTo: '2024-12-20T08:00:00.000Z',
     destination: '5',
     isFavorite: true,
     offers: [

@@ -1,10 +1,11 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {humanizeTaskDueDate} from '../utils/task.js';
 import {
-  FULL_DATE_FORMAT,
   EDIT_POINT_BUTTON_TEXT,
   NEW_POINT_BUTTON_TEXT
 } from '../constants.js';
+import flatpickr from 'flatpickr';
+
+import'flatpickr/dist/flatpickr.min.css';
 
 const createEventItemTemplate = (offers, checkedType) =>
   offers.map(({type}) =>
@@ -133,8 +134,6 @@ function createEditPointTemplate(point, destinations, offers, isEditMode) {
     description,
     pictures
   } = destination;
-  const eventStartTime = humanizeTaskDueDate(dateFrom, FULL_DATE_FORMAT);
-  const eventEndTime = humanizeTaskDueDate(dateTo, FULL_DATE_FORMAT);
 
   return (
     `<li class="trip-events__item">
@@ -167,10 +166,10 @@ function createEditPointTemplate(point, destinations, offers, isEditMode) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-${id}">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${eventStartTime}">
+            <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${dateFrom}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-${id}">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${eventEndTime}">
+            <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${dateTo}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -199,6 +198,8 @@ function createEditPointTemplate(point, destinations, offers, isEditMode) {
 }
 
 export default class EditPointView extends AbstractStatefulView {
+  #datepickerFrom = null;
+  #datepickerTo = null;
   #destinations = null;
   #offers = null;
   #isEditMode = null;
@@ -233,6 +234,8 @@ export default class EditPointView extends AbstractStatefulView {
       this.element.querySelector('.event__section--offers')
         .addEventListener('change', this.#offerChangeHandler);
     }
+
+    this.#setDatepicker();
   }
 
   get template() {
@@ -242,6 +245,20 @@ export default class EditPointView extends AbstractStatefulView {
       this.#offers,
       this.#isEditMode
     );
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
   }
 
   reset(point) {
@@ -300,6 +317,46 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
 
     this.#handleButtonRollupClick();
+  };
+
+  #setDatepicker = () => {
+    const [dateFromEl, dateToEl] = this.element.querySelectorAll('.event__input--time');
+    const commonConfig = {
+      dateFormat: 'd/m/y H:i',
+      enableTime: true,
+      locale: {firstDayOfWeek: 1},
+      'time_24hr': true
+    };
+
+    this.#datepickerFrom = flatpickr(
+      dateFromEl,
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateFrom,
+        onClose: this.#dateFromCloseHandler,
+        maxDate: this._state.dateTo
+      }
+    );
+
+    this.#datepickerTo = flatpickr(
+      dateToEl,
+      {
+        ...commonConfig,
+        defaultDate: this._state.dateTo,
+        onClose: this.#dateToCloseHandler,
+        minDate: this._state.dateFrom
+      }
+    );
+  };
+
+  #dateFromCloseHandler = ([userDate]) => {
+    this._setState({dateFrom: userDate});
+    this.#datepickerTo.set('minDate', this._state.dateFrom);
+  };
+
+  #dateToCloseHandler = ([userDate]) => {
+    this._setState({dateTo: userDate});
+    this.#datepickerFrom.set('maxDate', this._state.dateTo);
   };
 
   static parsePointToState(point) {
