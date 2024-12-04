@@ -1,5 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizeTaskDueDate} from '../utils/task.js';
+import {
+  humanizeTaskDueDate,
+  getDateDiff
+} from '../utils/task.js';
 import {
   DATE_FORMAT,
   DATE_TIME_FORMAT,
@@ -48,7 +51,7 @@ function createItemTemplate(point, destination, offers) {
             &mdash;
             <time class="event__end-time" datetime="${dateTo}">${timeTo}</time>
           </p>
-          <p class="event__duration">30M</p>
+          <p class="event__duration">${getDateDiff(dateFrom, dateTo)}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
