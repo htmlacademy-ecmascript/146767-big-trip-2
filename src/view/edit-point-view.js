@@ -31,9 +31,9 @@ const createOfferItemTemplate = (offersByType, point, type) =>
         <input
           class="event__offer-checkbox  visually-hidden"
           id="event-offer-${id}"
-          data-offer-id="${id}"
           type="checkbox"
           name="event-offer-${type}-${id}"
+          value="${id}"
           ${isChecked}
         />
         <label class="event__offer-label" for="event-offer-${id}">
@@ -294,7 +294,7 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   #offerChangeHandler = (evt) => {
-    const currentOffer = evt.target.dataset.offerId;
+    const currentOffer = evt.target.value;
 
     if (evt.target.checked) {
       this._setState({

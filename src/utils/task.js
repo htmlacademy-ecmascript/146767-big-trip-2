@@ -28,7 +28,7 @@ export const getDateDiff = (dateFrom, dateTo) => {
   const hours = Math.floor(diffInMinutes / 60);
   const days = Math.floor(hours / 24);
 
-  const addZero = (num) => num < 10 ? `0${num}` : num;
+  const addZero = (num) => num.toString().padStart(2, '0');
 
   if (!diffInMinutes) {
     return '';
