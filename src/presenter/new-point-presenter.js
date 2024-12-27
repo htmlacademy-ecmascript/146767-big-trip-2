@@ -22,14 +22,12 @@ export default class NewPointPresenter {
     }
 
     this.#pointEditComponent = new EditPointView({
-      defaultPoint: this.#pointsModel.newPoint,
-      defaultDestination: this.#pointsModel.newDestination,
+      point: this.#pointsModel.newPoint,
       destinations: this.#pointsModel.destinations,
       offers: this.#pointsModel.offers,
       isEditMode: false,
-      isNewPoint: true,
       onFormSubmit: this.#handleFormSubmit,
-      onDestroy: this.#handleDeleteClick
+      onDeleteClick: this.#handleDeleteClick
     });
 
     render(this.#pointEditComponent, this.#ListContainer.element, RenderPosition.AFTERBEGIN);
@@ -50,6 +48,15 @@ export default class NewPointPresenter {
   }
 
   #handleFormSubmit = (point) => {
+    if (
+      !point.destination ||
+      !point.basePrice ||
+      point.basePrice < 0
+    ) {
+      this.destroy();
+      return;
+    }
+
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,

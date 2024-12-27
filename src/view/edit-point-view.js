@@ -5,6 +5,7 @@ import {
 } from '../constants.js';
 import flatpickr from 'flatpickr';
 import dayjs from 'dayjs';
+import he from 'he';
 
 import'flatpickr/dist/flatpickr.min.css';
 
@@ -91,7 +92,7 @@ const createImageItemTemplate = (images) => {
 };
 
 const createDestinationContainerTemplate = (description, pictures) => {
-  if (!description && !pictures.length) {
+  if (!description && !pictures?.length) {
     return '';
   }
 
@@ -122,12 +123,9 @@ const getResetButtonText = (isEditMode) =>
 
 function createEditPointTemplate(
   point,
-  defaultPoint,
   destinations,
-  defaultDestination,
   offers,
   isEditMode,
-  isNewPoint
 ) {
   const {
     id,
@@ -135,14 +133,10 @@ function createEditPointTemplate(
     basePrice,
     dateFrom,
     dateTo
-  } = isNewPoint ? defaultPoint : point;
+  } = point;
+
   const destination = destinations.find((currentDestination) =>
     currentDestination.id === point.destination);
-  const {
-    name,
-    description,
-    pictures
-  } = isNewPoint ? defaultDestination : destination;
 
   return (
     `<li class="trip-events__item">
@@ -167,7 +161,7 @@ function createEditPointTemplate(
             <label class="event__label  event__type-output" for="event-destination-${id}">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-${id}">
+            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination?.name ?? ''}" list="destination-list-${id}">
             <datalist id="destination-list-${id}">
               ${createDestinationItemTemplate(destinations)}
             </datalist>
@@ -186,7 +180,7 @@ function createEditPointTemplate(
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${he.encode(String(basePrice))}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -199,7 +193,7 @@ function createEditPointTemplate(
 
           ${createOffersContainerTemplate(offers, point, type)}
 
-          ${createDestinationContainerTemplate(description, pictures)}
+          ${createDestinationContainerTemplate(destination?.description, destination?.pictures)}
         </section>
       </form>
     </li>`
@@ -207,37 +201,28 @@ function createEditPointTemplate(
 }
 
 export default class EditPointView extends AbstractStatefulView {
-  #defaultPoint = null;
   #datepickerFrom = null;
   #datepickerTo = null;
   #destinations = null;
-  #defaultDestination = null;
   #offers = null;
   #isEditMode = null;
-  #isNewPoint = null;
   #handleFormSubmit = null;
   #handleButtonRollupClick = null;
   #handleDeleteClick = null;
 
   constructor({
     point,
-    defaultPoint,
     destinations,
-    defaultDestination,
     offers,
     isEditMode,
-    isNewPoint,
     onFormSubmit,
     onButtonRollupClick,
     onDeleteClick,
   }) {
     super();
-    this.#defaultPoint = defaultPoint;
     this.#destinations = destinations;
-    this.#defaultDestination = defaultDestination;
     this.#offers = offers;
     this.#isEditMode = isEditMode;
-    this.#isNewPoint = isNewPoint;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleButtonRollupClick = onButtonRollupClick;
     this.#handleDeleteClick = onDeleteClick;
@@ -274,12 +259,9 @@ export default class EditPointView extends AbstractStatefulView {
   get template() {
     return createEditPointTemplate(
       this._state,
-      this.#defaultPoint,
       this.#destinations,
-      this.#defaultDestination,
       this.#offers,
-      this.#isEditMode,
-      this.#isNewPoint,
+      this.#isEditMode
     );
   }
 
