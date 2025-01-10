@@ -5,6 +5,7 @@ import EventAddButtonView from '../view/event-add-button-view.js';
 import PointPresenter from '../presenter/point-presenter.js';
 import NewPointPresenter from '../presenter/new-point-presenter.js';
 import FilterPresenter from '../presenter/filter-presenter.js';
+import LoadingView from '../view/loading-view.js';
 import {headerContainer, filtersContainer, mainContainer} from '../main.js';
 import {remove, render} from '../framework/render.js';
 import {filter} from '../utils/filter.js';
@@ -21,7 +22,9 @@ export default class ListPresenter {
   #eventAddButton = null;
   #currentSortType = SortType.DAY.value;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
+  #loadingContainer = new LoadingView();
   #listContainer = new ListContainerView();
   #pointPresenters = new Map();
 
@@ -120,10 +123,20 @@ export default class ListPresenter {
     });
   }
 
+  #renderLoading() {
+    render(this.#loadingContainer, mainContainer);
+  }
+
   #renderApp() {
     const pointsCount = this.points.length;
 
     this.#renderFilters();
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     this.#renderAddButton();
 
     if (!pointsCount) {
@@ -142,6 +155,7 @@ export default class ListPresenter {
 
     remove(this.#filterPresenter.filterComponent);
     remove(this.#eventAddButton);
+    remove(this.#loadingContainer);
     remove(this.#listSort);
 
     if (this.#listEmpty) {
@@ -203,6 +217,11 @@ export default class ListPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearList({resetSortType: true});
+        this.#renderApp();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        this.#clearList();
         this.#renderApp();
         break;
     }
