@@ -1,19 +1,16 @@
 import Observable from '../framework/observable.js';
-import {points} from '../mocks/points.js';
-import {offers} from '../mocks/offers.js';
-import {destinations} from '../mocks/destinations.js';
+import {UpdateType} from '../constants.js';
 import dayjs from 'dayjs';
 
 export default class PointsModel extends Observable {
-  #points = null;
-  #offers = null;
-  #destinations = null;
+  #points = [];
+  #offers = [];
+  #destinations = [];
+  #pointsApiService = null;
 
-  constructor() {
+  constructor({pointsApiService}) {
     super();
-    this.#points = points;
-    this.#offers = offers;
-    this.#destinations = destinations;
+    this.#pointsApiService = pointsApiService;
   }
 
   get points() {
@@ -64,10 +61,17 @@ export default class PointsModel extends Observable {
       .find((item) => item.id === id);
   }
 
-  updatePoint(updateType, update) {
-    this.#points = this.#points.map((point) => point.id === update.id ? update : point);
+  async updatePoint(updateType, update) {
+    try {
+      const response = await this.#pointsApiService.updatePoint(update);
+      const updatedPoint = this.#adaptToClient(response);
 
-    this._notify(updateType, update);
+      this.#points = this.#points.map((point) => point.id === update.id ? update : point);
+
+      this._notify(updateType, updatedPoint);
+    } catch (error) {
+      throw new Error('Can\'t update task');
+    }
   }
 
   addPoint(updateType, update) {
@@ -83,5 +87,39 @@ export default class PointsModel extends Observable {
     this.#points = this.#points.filter((point) => point.id !== update.id);
 
     this._notify(updateType);
+  }
+
+  async init() {
+    try {
+      const points = await this.#pointsApiService.points;
+      const offers = await this.#pointsApiService.offers;
+      const destinations = await this.#pointsApiService.destinations;
+
+      this.#points = points.map(this.#adaptToClient);
+      this.#offers = offers;
+      this.#destinations = destinations;
+    } catch (error) {
+      this.#points = [];
+      this.#offers = [];
+      this.#destinations = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  }
+
+  #adaptToClient(point) {
+    const adaptedPoint = {...point,
+      dateFrom: point['date_from'],
+      dateTo: point['date_to'],
+      basePrice: point['base_price'],
+      isFavorite: point['is_favorite'],
+    };
+
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['is_favorite'];
+
+    return adaptedPoint;
   }
 }
