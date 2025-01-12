@@ -47,11 +47,31 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#pointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
   #handleFormSubmit = (point) => {
     if (
       !point.destination ||
       !point.basePrice ||
-      point.basePrice < 0
+      point.basePrice < 0 ||
+      point.dateFrom === point.dateTo
     ) {
       this.destroy();
       return;
@@ -60,9 +80,8 @@ export default class NewPointPresenter {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: 'test', ...point}
+      point
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {
