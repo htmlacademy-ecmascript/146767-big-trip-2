@@ -1,6 +1,7 @@
 import ListContainerView from '../view/list-container-view.js';
 import ListSortView from '../view/list-sort-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
+import ListInfoView from '../view/list-info-view.js';
 import EventAddButtonView from '../view/event-add-button-view.js';
 import PointPresenter from '../presenter/point-presenter.js';
 import NewPointPresenter from '../presenter/new-point-presenter.js';
@@ -8,7 +9,7 @@ import FilterPresenter from '../presenter/filter-presenter.js';
 import LoadingView from '../view/loading-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import {headerContainer, filtersContainer, mainContainer} from '../main.js';
-import {remove, render} from '../framework/render.js';
+import {remove, render, RenderPosition} from '../framework/render.js';
 import {filter} from '../utils/filter.js';
 import {sortDateDesc, sortPriceDesc} from '../utils/task.js';
 import {
@@ -26,6 +27,7 @@ export default class ListPresenter {
   #newPointPresenter = null;
   #listSort = null;
   #listEmpty = null;
+  #listInfo = null;
   #eventAddButton = null;
   #currentSortType = SortType.DAY.value;
   #filterType = FilterType.EVERYTHING;
@@ -71,6 +73,15 @@ export default class ListPresenter {
 
   init() {
     this.#renderApp();
+  }
+
+  #renderListInfo() {
+    this.#listInfo = new ListInfoView({
+      points: this.points
+    });
+
+    render(this.#listInfo, headerContainer, RenderPosition.AFTERBEGIN);
+
   }
 
   #renderFilters() {
@@ -155,6 +166,7 @@ export default class ListPresenter {
       return;
     }
 
+    this.#renderListInfo();
     this.#renderSort();
     this.#renderPoints();
   }
@@ -167,6 +179,7 @@ export default class ListPresenter {
     remove(this.#filterPresenter.filterComponent);
     remove(this.#eventAddButton);
     remove(this.#loadingContainer);
+    remove(this.#listInfo);
     remove(this.#listSort);
 
     if (this.#listEmpty) {
