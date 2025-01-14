@@ -27,12 +27,12 @@ export default class PointsModel extends Observable {
 
   get newPoint() {
     return {
-      id: 'new-point',
       basePrice: 0,
       dateFrom: dayjs().toISOString(),
       dateTo: dayjs().toISOString(),
       offers: [],
-      type: 'flight'
+      type: 'flight',
+      isFavorite: false,
     };
   }
 
@@ -66,27 +66,44 @@ export default class PointsModel extends Observable {
       const response = await this.#pointsApiService.updatePoint(update);
       const updatedPoint = this.#adaptToClient(response);
 
-      this.#points = this.#points.map((point) => point.id === update.id ? update : point);
+      this.#points = this.#points.map((point) =>
+        point.id === updatedPoint.id ?
+          updatedPoint :
+          point
+      );
 
       this._notify(updateType, updatedPoint);
     } catch (error) {
-      throw new Error('Can\'t update task');
+      throw new Error('Can\'t update point');
     }
   }
 
-  addPoint(updateType, update) {
-    this.#points = [
-      update,
-      ...this.#points,
-    ];
+  async addPoint(updateType, update) {
+    try {
+      const response = await this.#pointsApiService.addPoint(update);
+      const addedPoint = this.#adaptToClient(response);
 
-    this._notify(updateType, update);
+      this.#points = [
+        addedPoint,
+        ...this.#points,
+      ];
+
+      this._notify(updateType, addedPoint);
+    } catch (error) {
+      throw new Error('Can\'t add point');
+    }
   }
 
-  deletePoint(updateType, update) {
-    this.#points = this.#points.filter((point) => point.id !== update.id);
+  async deletePoint(updateType, update) {
+    try {
+      await this.#pointsApiService.deletePoint(update);
 
-    this._notify(updateType);
+      this.#points = this.#points.filter((point) => point.id !== update.id);
+
+      this._notify(updateType);
+    } catch (error) {
+      throw new Error('Can\'t delete point');
+    }
   }
 
   async init() {

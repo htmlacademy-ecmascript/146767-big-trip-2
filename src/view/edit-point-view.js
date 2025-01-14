@@ -1,6 +1,9 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {
-  EDIT_POINT_BUTTON_TEXT,
+  SAVE_POINT_BUTTON_TEXT,
+  SAVING_POINT_BUTTON_TEXT,
+  DELETE_POINT_BUTTON_TEXT,
+  DELETING_POINT_BUTTON_TEXT,
   NEW_POINT_BUTTON_TEXT
 } from '../constants.js';
 import flatpickr from 'flatpickr';
@@ -14,7 +17,14 @@ const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + strin
 const createEventItemTemplate = (offers, checkedType) =>
   offers.map(({type}) =>
     `<div class="event__type-item">
-      <input id="event-type-${type}-1" class="event__type-input  visually-hidden"  type="radio" name="event-type" value="${type}" ${checkedType === type ? 'checked' : ''}>
+      <input
+        id="event-type-${type}-1"
+        class="event__type-input  visually-hidden"
+        type="radio"
+        name="event-type"
+        value="${type}"
+        ${checkedType === type ? 'checked' : ''}
+        >
       <label class="event__type-label  event__type-label--${type}"  for="event-type-${type}-1">
         ${capitalizeFirstLetter(type)}
       </label>
@@ -41,6 +51,7 @@ const createOfferItemTemplate = (offersByType, point, type) =>
           name="event-offer-${type}-${id}"
           value="${id}"
           ${isChecked}
+          ${point.isDisabled ? 'disabled' : ''}
         />
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
@@ -120,23 +131,31 @@ const createRollupButtonTemplate = (isEditMode) => {
   );
 };
 
-const getResetButtonText = (isEditMode) =>
-  isEditMode
-    ? EDIT_POINT_BUTTON_TEXT
-    : NEW_POINT_BUTTON_TEXT;
+const getResetButtonText = (isEditMode, isDeleting) => {
+  if (isEditMode) {
+    return isDeleting
+      ? DELETING_POINT_BUTTON_TEXT
+      : DELETE_POINT_BUTTON_TEXT;
+  }
+
+  return NEW_POINT_BUTTON_TEXT;
+};
 
 function createEditPointTemplate(
   point,
   destinations,
   offers,
-  isEditMode,
+  isEditMode
 ) {
   const {
     id,
     type,
     basePrice,
     dateFrom,
-    dateTo
+    dateTo,
+    isDisabled,
+    isSaving,
+    isDeleting
   } = point;
 
   const destination = destinations.find((currentDestination) =>
@@ -151,8 +170,12 @@ function createEditPointTemplate(
               <span class="visually-hidden">Choose event type</span>
               <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event ${type} icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
-
+            <input
+              class="event__type-toggle  visually-hidden"
+              id="event-type-toggle-${id}"
+              type="checkbox"
+              ${isDisabled ? 'disabled' : ''}
+            >
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
@@ -165,7 +188,15 @@ function createEditPointTemplate(
             <label class="event__label  event__type-output" for="event-destination-${id}">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination?.name ?? ''}" list="destination-list-${id}">
+            <input
+              class="event__input  event__input--destination"
+              id="event-destination-${id}"
+              type="text"
+              name="event-destination"
+              value="${destination?.name ?? ''}"
+              list="destination-list-${id}"
+              ${isDisabled ? 'disabled' : ''}
+            >
             <datalist id="destination-list-${id}">
               ${createDestinationItemTemplate(destinations)}
             </datalist>
@@ -173,10 +204,24 @@ function createEditPointTemplate(
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-${id}">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${dateFrom}">
+            <input
+              class="event__input  event__input--time"
+              id="event-start-time-${id}"
+              type="text"
+              name="event-start-time"
+              value="${dateFrom}"
+              ${isDisabled ? 'disabled' : ''}
+            >
             &mdash;
             <label class="visually-hidden" for="event-end-time-${id}">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${dateTo}">
+            <input
+              class="event__input  event__input--time"
+              id="event-end-time-${id}"
+              type="text"
+              name="event-end-time"
+              value="${dateTo}"
+              ${isDisabled ? 'disabled' : ''}
+            >
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -184,12 +229,21 @@ function createEditPointTemplate(
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${he.encode(String(basePrice))}">
+            <input
+              class="event__input  event__input--price"
+              id="event-price-${id}"
+              type="number"
+              name="event-price"
+              value="${he.encode(String(basePrice))}"
+              ${isDisabled ? 'disabled' : ''}
+            >
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit">
+            ${isSaving ? SAVING_POINT_BUTTON_TEXT : SAVE_POINT_BUTTON_TEXT}
+          </button>
           <button class="event__reset-btn" type="reset">
-            ${getResetButtonText(isEditMode)}
+            ${getResetButtonText(isEditMode, isDeleting)}
           </button>
           ${createRollupButtonTemplate(isEditMode)}
         </header>
@@ -388,7 +442,10 @@ export default class EditPointView extends AbstractStatefulView {
 
   static parsePointToState(point) {
     return {
-      ...point
+      ...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
@@ -396,6 +453,10 @@ export default class EditPointView extends AbstractStatefulView {
     const point = {
       ...state
     };
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   }

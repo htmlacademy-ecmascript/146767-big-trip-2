@@ -4,8 +4,16 @@ export const DATE_TIME_FORMAT = 'YYYY-MM-DD';
 export const SORT_DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const DIFF_DATE_FORMAT = 'm';
 export const DEFAULT_POINT_COUNT = 0;
-export const EDIT_POINT_BUTTON_TEXT = 'Delete';
+export const SAVE_POINT_BUTTON_TEXT = 'Save';
+export const SAVING_POINT_BUTTON_TEXT = 'Saving...';
+export const DELETE_POINT_BUTTON_TEXT = 'Delete';
+export const DELETING_POINT_BUTTON_TEXT = 'Deleting...';
 export const NEW_POINT_BUTTON_TEXT = 'Cancel';
+
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export const FilterType = {
   EVERYTHING: 'everything',
