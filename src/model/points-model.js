@@ -1,12 +1,12 @@
 import Observable from '../framework/observable.js';
 import {UpdateType} from '../constants.js';
-import dayjs from 'dayjs';
 
 export default class PointsModel extends Observable {
   #points = [];
   #offers = [];
   #destinations = [];
   #pointsApiService = null;
+  #errorMessage = null;
 
   constructor({pointsApiService}) {
     super();
@@ -25,11 +25,15 @@ export default class PointsModel extends Observable {
     return this.#destinations;
   }
 
+  get errorMessage() {
+    return this.#errorMessage;
+  }
+
   get newPoint() {
     return {
       basePrice: 0,
-      dateFrom: dayjs().toISOString(),
-      dateTo: dayjs().toISOString(),
+      dateFrom: '',
+      dateTo: '',
       offers: [],
       type: 'flight',
       isFavorite: false,
@@ -116,9 +120,7 @@ export default class PointsModel extends Observable {
       this.#offers = offers;
       this.#destinations = destinations;
     } catch (error) {
-      this.#points = [];
-      this.#offers = [];
-      this.#destinations = [];
+      this.#errorMessage = error.message;
     }
 
     this._notify(UpdateType.INIT);

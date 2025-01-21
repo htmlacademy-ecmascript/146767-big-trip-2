@@ -12,7 +12,8 @@ import he from 'he';
 
 import'flatpickr/dist/flatpickr.min.css';
 
-const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+const capitalizeFirstLetter = (eventTypeText) =>
+  eventTypeText.charAt(0).toUpperCase() + eventTypeText.slice(1);
 
 const createEventItemTemplate = (offers, checkedType) =>
   offers.map(({type}) =>
