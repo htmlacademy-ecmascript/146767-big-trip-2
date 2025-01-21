@@ -13,14 +13,15 @@ const getDateWeight = (date) => {
   return dayjs(dateTo).diff(dayjs(dateFrom));
 };
 
-export const sortDateDesc = (a, b) => {
-  const weightA = getDateWeight(a);
-  const weightB = getDateWeight(b);
+export const sortDateDesc = (previousDate, nextDate) => {
+  const weightPreviousDate = getDateWeight(previousDate);
+  const weightNextDate = getDateWeight(nextDate);
 
-  return weightB - weightA;
+  return weightNextDate - weightPreviousDate;
 };
 
-export const sortPriceDesc = (a, b) => b.basePrice - a.basePrice;
+export const sortPriceDesc = (previousPrice, nextPrice) =>
+  nextPrice.basePrice - previousPrice.basePrice;
 
 export const getDateDiff = (dateFrom, dateTo) => {
   const diffInMinutes = dayjs(dateTo).diff(dayjs(dateFrom), DIFF_DATE_FORMAT);

@@ -93,7 +93,8 @@ export default class ListPresenter {
 
   #renderListEmpty() {
     this.#listEmpty = new ListEmptyView({
-      filterType: this.#filterType
+      filterType: this.#filterType,
+      errorMessage: this.#pointsModel.errorMessage
     });
 
     render(this.#listEmpty, mainContainer);
@@ -148,7 +149,9 @@ export default class ListPresenter {
       return;
     }
 
-    this.#renderAddButton();
+    if (!this.#pointsModel.errorMessage) {
+      this.#renderAddButton();
+    }
 
     if (!pointsCount) {
       this.#renderListEmpty();

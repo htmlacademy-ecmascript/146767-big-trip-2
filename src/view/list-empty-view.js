@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {FilterType} from '../constants.js';
+import {FilterType, ERROR_MESSAGE_TEXT} from '../constants.js';
 
 const ListEmptyTextType = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
@@ -8,21 +8,25 @@ const ListEmptyTextType = {
   [FilterType.PAST]: 'There are no past events now'
 };
 
-function createListEmptyTemplate(filterType) {
+function createListEmptyTemplate(filterType, errorMessage) {
   const ListEmptyTextValue = ListEmptyTextType[filterType];
 
-  return `<p class="trip-events__msg">${ListEmptyTextValue}</p>`;
+  return `<p class="trip-events__msg">
+    ${errorMessage ? ERROR_MESSAGE_TEXT : ListEmptyTextValue}
+  </p>`;
 }
 
 export default class ListEmptyView extends AbstractView {
   #filterType = null;
+  #errorMessage = null;
 
-  constructor({filterType}) {
+  constructor({filterType, errorMessage}) {
     super();
     this.#filterType = filterType;
+    this.#errorMessage = errorMessage;
   }
 
   get template() {
-    return createListEmptyTemplate(this.#filterType);
+    return createListEmptyTemplate(this.#filterType, this.#errorMessage);
   }
 }
