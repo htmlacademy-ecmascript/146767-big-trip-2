@@ -32,6 +32,7 @@ export default class ListPresenter {
   #currentSortType = SortType.DAY.value;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
+  #addedOffers = [];
 
   #loadingContainer = new LoadingView();
   #listContainer = new ListContainerView();
@@ -76,12 +77,23 @@ export default class ListPresenter {
   }
 
   #renderListInfo() {
-    this.#listInfo = new ListInfoView({
-      points: this.points
+    this.points.forEach((point) => {
+      const addedOffer = this.#pointsModel.getOfferById(
+        point.type,
+        point.offers
+      );
+
+      this.#addedOffers.push(addedOffer);
     });
 
-    render(this.#listInfo, headerContainer, RenderPosition.AFTERBEGIN);
+    this.#listInfo = new ListInfoView({
+      points: this.points,
+      addedOffers: this.#addedOffers,
+      destinations: this.#pointsModel.destinations
+    });
 
+    this.#addedOffers = [];
+    render(this.#listInfo, headerContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderFilters() {
@@ -169,9 +181,9 @@ export default class ListPresenter {
       return;
     }
 
-    this.#renderListInfo();
     this.#renderSort();
     this.#renderPoints();
+    this.#renderListInfo();
   }
 
   #clearList({resetSortType = false} = {}) {
