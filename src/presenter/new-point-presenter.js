@@ -66,11 +66,21 @@ export default class NewPointPresenter {
     this.#pointEditComponent.shake(resetFormState);
   }
 
+  #isSomeInputEmpty = () => {
+    const inputs = [...this.#pointEditComponent
+      .element
+      .querySelectorAll('.event__input')
+    ];
+
+    return inputs.some((input) => input.value === '');
+  };
+
   #handleFormSubmit = (point) => {
     if (
+      this.#isSomeInputEmpty() ||
       !point.destination ||
       !point.basePrice ||
-      point.basePrice < 0 ||
+      Number(point.basePrice) <= 0 ||
       point.dateFrom === point.dateTo
     ) {
       this.destroy();

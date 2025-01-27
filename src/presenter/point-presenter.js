@@ -144,7 +144,21 @@ export default class PointPresenter {
     this.#replacePointToForm();
   };
 
+  #isSomeInputEmpty = () => {
+    const inputs = [...this.#pointEditComponent
+      .element
+      .querySelectorAll('.event__input')
+    ];
+
+    return inputs.some((input) => input.value === '');
+  };
+
   #handleFormSubmit = (update) => {
+    if (this.#isSomeInputEmpty()) {
+      this.#pointEditComponent.shake();
+      return;
+    }
+
     const isMinorUpdate =
       String(this.#point.offers.sort()) !== String(update.offers.sort()) ||
       this.#point.basePrice !== update.basePrice ||
