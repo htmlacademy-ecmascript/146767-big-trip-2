@@ -154,7 +154,11 @@ export default class PointPresenter {
   };
 
   #handleFormSubmit = (update) => {
-    if (this.#isSomeInputEmpty()) {
+    if (
+      this.#isSomeInputEmpty() ||
+      Number(update.basePrice) <= 0 ||
+      update.dateFrom === update.dateTo
+    ) {
       this.#pointEditComponent.shake();
       return;
     }
