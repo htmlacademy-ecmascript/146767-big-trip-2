@@ -78,12 +78,10 @@ export default class NewPointPresenter {
   #handleFormSubmit = (point) => {
     if (
       this.#isSomeInputEmpty() ||
-      !point.destination ||
-      !point.basePrice ||
       Number(point.basePrice) <= 0 ||
       point.dateFrom === point.dateTo
     ) {
-      this.destroy();
+      this.#pointEditComponent.shake();
       return;
     }
 
